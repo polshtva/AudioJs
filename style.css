@@ -1,0 +1,7 @@
+input[name="muted"]:checked ~ .i-vol button[data-v="1"]{
+    display: none;
+}
+
+input[name="muted"]:not(:checked) ~ .i-vol button[data-v="0"]{
+    display: none;
+}

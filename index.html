@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Players</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css" integrity="sha512-Z/def5z5u2aR89OuzYcxmDJ0Bnd5V1cKqBEbvLOiUNWdg9PQeXVvXLI90SE4QOHGlfLqUnDNVAYyZi8UwUTmWQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Players</h1>
+        <audio src="./media/mixaund-feel.mp3" controls_ id="a1"></audio>
+        <form action="" name="player1">
+            <input type="checkbox" name="muted" class="d-none">
+            <div class="row flex-nowrap">
+                <div class="col-2">
+                    <button type="button" class="i-play btn btn-primary">Пуск</button>
+                </div>
+                <div class="col-2">
+                    <button type="button" class="i-pause btn btn-primary">Пауза</button>
+                </div>
+                <div class="col-2">
+                    <button type="button" class="i-stop btn btn-primary">Стоп</button>
+                </div>
+                <div class="col-3"> <input class="form-control d-inline col-6" type="time" name="current" id="" readonly></div>
+                <div class="col-3"> <input class="form-control d-inline col-6" type="time" name="duration" id="" readonly></div>
+            </div>
+            <div class="progress" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                <div id ="pro1" class="progress-bar bg-success" style="width: 0%"></div>
+              </div>
+              <div class="row i-vol">
+                <div class="col-10"><input type="range" name="vaol" id="v1" class="form-range" min="0" max="100"></div>
+                <div class="col-2">
+                    <button type="button" class="btn btn-success setMute" data-v="1">&#128265;</button>
+                    <button type="button" class="btn btn-success setMute" data-v="0">&#128266;</button>
+                </div>
+              </div>
+        </form>
+    </div>
+    <script>
+
+        let a1 = document.getElementById('a1');
+        let p1 = document.querySelector('#pro1');
+        let v1 = document.querySelector('#v1');
+
+        let handlePclick = function(e){
+            let el = e.target, r = el.getBoundingClientRect();
+            let ppc = (e.clientX - r.left) / r.width;
+            // a1.fastSeek(a1.duration * ppc);
+            a1.currentTime = a1.duration * ppc;
+            //console.log(e.clientX, r, ppc);
+        }
+
+        a1.addEventListener('timeupdate', e => {
+            let el = e.target;
+            let ppc =  el.currentTime / el.duration;
+            p1.style.setProperty('width', `${ppc*100}%`)
+            let m = String(Math.floor(el.currentTime / 60)).padStart(2, '0'), s = String(Math.floor(el.currentTime % 60)).padStart(2, '0');
+            let ce = document.forms.player1.elements.current;
+            let cv = `${m}:${s}`;
+            let dm = String(Math.floor(el.duration / 60)).padStart(2,"0");
+            let ds = String(Math.floor(el.duration % 60)).padStart(2,"0");
+
+            document.forms.player1.elements.current.value = `${m}:${s}`;
+            document.forms.player1.elements.duration.value = `${dm}:${ds}`;
+            // console.log(ce, cv);
+            // console.log(ppc)
+        });
+
+        v1.addEventListener('input', e => {
+            let val = e.target.value / 100;
+            a1.volume = val;
+            document.forms.player1.elements.muted.checked = (val == 0);
+        });
+
+        document.querySelectorAll(".setMute").forEach(el => el.addEventListener("click", e => {
+            let el = e.target;
+            let bm = el.dataset.v == 1;
+            a1.muted = bm;
+            v1.value = (bm) ? 0: a1.volume * 100;
+            document.forms.player1.elements.muted.checked = bm;
+        }))
+        p1.parentElement.addEventListener('click', handlePclick);
+        document.querySelector('.i-play').addEventListener('click', e => {
+            a1.play();
+        })
+        document.querySelector('.i-pause').addEventListener('click', e => {
+            a1.pause();
+        })
+        document.querySelector('.i-stop').addEventListener('click', e => {
+            a1.pause();
+            a1.currentTime = 0;
+        })
+    </script>
+</body>
+</html>
